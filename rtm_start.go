@@ -14,27 +14,27 @@ import (
     "encoding/json"
 )
 
-const RTM_START_URL = "https://slack.com/api/rtm.start?token=YOUR-TOKEN"
+const rtmStartURL = "https://slack.com/api/rtm.start?token=YOUR-TOKEN"
 
 type RtmStart struct {
-    Url string
+    URL string
 }
 
-var http_client *http.Client = &http.Client{}
+var httpClient = &http.Client{}
 
 func requestRtmStart() *RtmStart {
-    rtm_start := &RtmStart{}
-    resp, err := http_client.Get(RTM_START_URL)
+    rtmStart := &RtmStart{}
+    resp, err := httpClient.Get(rtmStartURL)
     if err != nil {
-        return rtm_start
+        return rtmStart
     }
     defer resp.Body.Close()
 
     body := make([]byte, 0, 1024)
     chunk := make([]byte, 512)
     for {
-        rcv_count, err := resp.Body.Read(chunk)
-        for _, val := range(chunk[:rcv_count]) {
+        rcvCount, err := resp.Body.Read(chunk)
+        for _, val := range(chunk[:rcvCount]) {
             body = append(body, val)
         }
         if err == io.EOF {
@@ -42,27 +42,27 @@ func requestRtmStart() *RtmStart {
         }
     }
 
-    err = json.Unmarshal(body, rtm_start)
-    return rtm_start
+    err = json.Unmarshal(body, rtmStart)
+    return rtmStart
 }
 
-func connectToMessageServer(ws_url string) (*websocket.Conn, error) {
-    url_, err := addPortToUrl(ws_url)
+func connectToMessageServer(wsURL string) (*websocket.Conn, error) {
+    urlWithPort, err := addPortToURL(wsURL)
     if err != nil {
         return nil, err
     }
     protocol := ""
     origin := "http://localhost/"
-    ws_conn, err := websocket.Dial(url_, protocol, origin)
-    return ws_conn, err
+    wsConn, err := websocket.Dial(urlWithPort, protocol, origin)
+    return wsConn, err
 }
 
-func addPortToUrl(url_ string) (string, error) {
-    u, err := url.Parse(url_)
+func addPortToURL(urlStr string) (string, error) {
+    u, err := url.Parse(urlStr)
     if err != nil {
         return "", err
     }
-    ssl_port := ":443"
-    u.Host = u.Host + ssl_port
+    sslPort := ":443"
+    u.Host = u.Host + sslPort
     return u.String(), nil
 }

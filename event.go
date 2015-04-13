@@ -6,7 +6,7 @@ import (
 )
 
 type OutboundEvent struct {
-    Id int `json:"id"`
+    ID int `json:"id"`
     Type string `json:"type"`
     Channel string `json:"channel"`
     Text string `json:"text"`
@@ -39,14 +39,14 @@ var (
 
 // parseInboundEvent parses a JSON inbound Slack event and returns
 // an appropriate event structure.
-func parseInboundEvent(json_blob json.RawMessage) (interface{}, error) {
-    var type_event TypeEvent
-    if err := json.Unmarshal(json_blob, &type_event); err != nil {
+func parseInboundEvent(jsonBlob json.RawMessage) (interface{}, error) {
+    var typeEvent TypeEvent
+    if err := json.Unmarshal(jsonBlob, &typeEvent); err != nil {
         return nil, err
     }
 
     var event interface{}
-    switch type_event.Type {
+    switch typeEvent.Type {
     case "hello", "message":
         event = new(InboundEvent)
     case "error":
@@ -54,7 +54,7 @@ func parseInboundEvent(json_blob json.RawMessage) (interface{}, error) {
     default:
         return nil, ErrUnknownEvent
     }
-    if err := json.Unmarshal(json_blob, event); err != nil {
+    if err := json.Unmarshal(jsonBlob, event); err != nil {
         return nil, err
     }
 

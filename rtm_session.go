@@ -11,32 +11,32 @@ import (
 
 func main() {
     rtm := requestRtmStart()
-    ws_conn, err := connectToMessageServer(rtm.Url)
+    wsConn, err := connectToMessageServer(rtm.URL)
     if err != nil {
         log.Fatal(err)
     }
-    in_chan := make(chan *InboundEvent)
-    err_chan := make(chan *ErrorEvent)
-    out_chan := make(chan *OutboundEvent)
-    go eventReceiverWorker(ws_conn, in_chan, err_chan)
-    go eventSenderWorker(ws_conn, out_chan)
-    go pingWorker(out_chan)
+    inChan := make(chan *InboundEvent)
+    errChan := make(chan *ErrorEvent)
+    outChan := make(chan *OutboundEvent)
+    go eventReceiverWorker(wsConn, inChan, errChan)
+    go eventSenderWorker(wsConn, outChan)
+    go pingWorker(outChan)
     for {
         select {
-        case event := <- in_chan:
+        case event := <- inChan:
             fmt.Println("Received msg ", event.User, event.Channel, event.Text)
-        case event := <- err_chan:
+        case event := <- errChan:
             fmt.Println("Received err ", event.Type, event.Error)
         }
     }
 }
 
-func eventReceiverWorker(ws_conn *websocket.Conn, event_chan chan *InboundEvent, err_chan chan *ErrorEvent) {
-    var json_blob json.RawMessage
+func eventReceiverWorker(wsConn *websocket.Conn, eventChan chan *InboundEvent, errChan chan *ErrorEvent) {
+    var jsonBlob json.RawMessage
     for {
-        json_blob = json.RawMessage{}
+        jsonBlob = json.RawMessage{}
         // The server blocks here until a message from the client is received.
-        err := websocket.JSON.Receive(ws_conn, &json_blob)
+        err := websocket.JSON.Receive(wsConn, &jsonBlob)
         if err == io.EOF {
             log.Fatal("Disconnected")
         }
@@ -44,23 +44,23 @@ func eventReceiverWorker(ws_conn *websocket.Conn, event_chan chan *InboundEvent,
             log.Fatal(err)
         }
 
-        i, err := parseInboundEvent(json_blob)
+        i, err := parseInboundEvent(jsonBlob)
         if err != nil && err != ErrUnknownEvent {
             log.Fatal(err)
         }
         switch event := i.(type) {
         case *InboundEvent:
-            event_chan <- event
+            eventChan <- event
         case *ErrorEvent:
-            err_chan <- event
+            errChan <- event
         }
     }
 }
 
-func eventSenderWorker(ws_conn *websocket.Conn, c chan *OutboundEvent) {
+func eventSenderWorker(wsConn *websocket.Conn, c chan *OutboundEvent) {
     for {
         event := <- c
-        if err := websocket.JSON.Send(ws_conn, *event); err != nil {
+        if err := websocket.JSON.Send(wsConn, *event); err != nil {
             log.Fatal(err)
         }
     }
