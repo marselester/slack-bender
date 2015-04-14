@@ -1,12 +1,13 @@
 package main
 
 import (
-	"code.google.com/p/go.net/websocket"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"time"
+
+	"code.google.com/p/go.net/websocket"
 )
 
 func main() {

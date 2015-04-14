@@ -1,6 +1,9 @@
 run:
 	go build && ./slack
 
+test:
+	go test
+
 lint:
 	golint
 
@@ -9,3 +12,6 @@ format:
 
 vet:
 	go vet .
+
+imports:
+	goimports .

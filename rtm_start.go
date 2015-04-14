@@ -7,11 +7,12 @@ to the message server it will provide a stream of events.
 package main
 
 import (
-	"code.google.com/p/go.net/websocket"
 	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
+
+	"code.google.com/p/go.net/websocket"
 )
 
 const rtmStartURL = "https://slack.com/api/rtm.start?token=YOUR-TOKEN"
