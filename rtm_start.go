@@ -11,11 +11,10 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"code.google.com/p/go.net/websocket"
 )
-
-const rtmStartURL = "https://slack.com/api/rtm.start?token=YOUR-TOKEN"
 
 type RtmStart struct {
 	URL string
@@ -23,9 +22,10 @@ type RtmStart struct {
 
 var httpClient = &http.Client{}
 
-func requestRtmStart() *RtmStart {
+func requestRtmStart(token string) *RtmStart {
+	urlWithToken := rtmStartURL(token)
+	resp, err := httpClient.Get(urlWithToken)
 	rtmStart := &RtmStart{}
-	resp, err := httpClient.Get(rtmStartURL)
 	if err != nil {
 		return rtmStart
 	}
@@ -45,6 +45,11 @@ func requestRtmStart() *RtmStart {
 
 	err = json.Unmarshal(body, rtmStart)
 	return rtmStart
+}
+
+func rtmStartURL(token string) string {
+	s := []string{"https://slack.com/api/rtm.start?token=", token}
+	return strings.Join(s, "")
 }
 
 func connectToMessageServer(wsURL string) (*websocket.Conn, error) {

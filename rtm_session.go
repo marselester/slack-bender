@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -10,12 +11,17 @@ import (
 	"code.google.com/p/go.net/websocket"
 )
 
+var apiAccessToken = flag.String("token", "", "Slack API access token")
+
 func main() {
-	rtm := requestRtmStart()
+	flag.Parse()
+	rtm := requestRtmStart(*apiAccessToken)
+
 	wsConn, err := connectToMessageServer(rtm.URL)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	inChan := make(chan *InboundEvent)
 	errChan := make(chan *ErrorEvent)
 	outChan := make(chan *OutboundEvent)
