@@ -8,10 +8,10 @@ lint:
 	golint
 
 format:
-	gofmt .
+	gofmt -w=true .
 
 vet:
 	go vet .
 
 imports:
-	goimports .
+	goimports -w=true .
