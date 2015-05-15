@@ -34,7 +34,7 @@ func TestErrorEvent(t *testing.T) {
     }`)
 	expectedEvent := ErrorEvent{
 		Type: "error",
-		Error: SlackError{
+		Error: slackError{
 			Code: 1,
 			Msg:  "Socket URL has expired",
 		},

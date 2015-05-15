@@ -5,6 +5,7 @@ import (
 	"errors"
 )
 
+// OutboundEvent structure is used to send messages.
 type OutboundEvent struct {
 	ID      int    `json:"id"`
 	Type    string `json:"type"`
@@ -12,10 +13,16 @@ type OutboundEvent struct {
 	Text    string `json:"text"`
 }
 
-type TypeEvent struct {
+// baseEvent is an abstract Slack JSON message.
+type baseEvent interface{}
+
+// helperTypeEvent is used to learn event type while parsing, so we can use
+// appropriate JSON structure (InboundEvent or ErrorEvent).
+type helperTypeEvent struct {
 	Type string
 }
 
+// InboundEvent represents incoming Slack message.
 type InboundEvent struct {
 	Type    string
 	Channel string
@@ -23,29 +30,31 @@ type InboundEvent struct {
 	Text    string
 }
 
-type SlackError struct {
+type slackError struct {
 	Code int
 	Msg  string
 }
 
+// ErrorEvent represents a JSON error we receive from Slack server.
 type ErrorEvent struct {
 	Type  string
-	Error SlackError
+	Error slackError
 }
 
+// ErrUnknownEvent is returned when we failed to recognise the event type.
 var (
 	ErrUnknownEvent = errors.New("unknown event")
 )
 
 // parseInboundEvent parses a JSON inbound Slack event and returns
 // an appropriate event structure.
-func parseInboundEvent(jsonBlob json.RawMessage) (interface{}, error) {
-	var typeEvent TypeEvent
+func parseInboundEvent(jsonBlob json.RawMessage) (baseEvent, error) {
+	var typeEvent helperTypeEvent
 	if err := json.Unmarshal(jsonBlob, &typeEvent); err != nil {
 		return nil, err
 	}
 
-	var event interface{}
+	var event baseEvent
 	switch typeEvent.Type {
 	case "hello", "message":
 		event = new(InboundEvent)
