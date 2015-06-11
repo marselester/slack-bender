@@ -20,7 +20,7 @@ func TestInboundEvent(t *testing.T) {
 	i, _ := parseInboundEvent(jsonBlob)
 	event := i.(*InboundEvent)
 	if expectedEvent != *event {
-		t.Errorf("Expected %s got %s", expectedEvent, event)
+		t.Errorf("Expected %#v got %#v", expectedEvent, event)
 	}
 }
 
@@ -42,6 +42,6 @@ func TestErrorEvent(t *testing.T) {
 	i, _ := parseInboundEvent(jsonBlob)
 	event := i.(*ErrorEvent)
 	if expectedEvent != *event {
-		t.Errorf("Expected %s got %s", expectedEvent, event)
+		t.Errorf("Expected %#v got %#v", expectedEvent, event)
 	}
 }
