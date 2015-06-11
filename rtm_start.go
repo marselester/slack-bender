@@ -13,7 +13,7 @@ import (
 	"net/url"
 	"strings"
 
-	"code.google.com/p/go.net/websocket"
+	"golang.org/x/net/websocket"
 )
 
 // RtmStart structure is used to parse WebSocket URL from initial message.
