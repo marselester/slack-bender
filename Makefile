@@ -1,5 +1,5 @@
 run:
-	go build && ./slack
+	go build && ./slack -token=$(token)
 
 test:
 	go test
