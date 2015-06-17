@@ -5,4 +5,4 @@ to print received messages.
 
     $ go get golang.org/x/net/websocket
     $ go build
-    $ ./slack -token="YourToken"
+    $ ./slack-bender -token="YourToken"

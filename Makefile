@@ -1,5 +1,5 @@
 run:
-	go build && ./slack -token=$(token)
+	go build && ./slack-bender -token=$(token)
 
 test:
 	go test
