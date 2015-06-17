@@ -5,12 +5,13 @@ import (
 )
 
 func listenAndReact(rtm *RtmStart, inChan chan *InboundEvent, errChan chan *ErrorEvent, outChan chan *OutboundEvent) {
+	fmt.Println("I am", rtm.Self.Name)
 	for {
 		select {
 		case event := <-inChan:
-			fmt.Println("Received msg ", event.User, event.Channel, event.Text)
+			fmt.Println("Message:", event.User, event.Channel, event.Text)
 		case event := <-errChan:
-			fmt.Println("Received err ", event.Type, event.Error)
+			fmt.Println("Error:", event.Type, event.Error)
 		}
 	}
 }
