@@ -18,7 +18,11 @@ import (
 
 // RtmStart structure is used to parse WebSocket URL from initial message.
 type RtmStart struct {
-	URL string
+	URL  string
+	Self struct {
+		ID   string
+		Name string
+	}
 }
 
 var httpClient = &http.Client{}
