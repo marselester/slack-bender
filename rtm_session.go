@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"io"
 	"log"
 	"time"
@@ -28,14 +27,8 @@ func main() {
 	go eventReceiverWorker(wsConn, inChan, errChan)
 	go eventSenderWorker(wsConn, outChan)
 	go pingWorker(outChan)
-	for {
-		select {
-		case event := <-inChan:
-			fmt.Println("Received msg ", event.User, event.Channel, event.Text)
-		case event := <-errChan:
-			fmt.Println("Received err ", event.Type, event.Error)
-		}
-	}
+
+	listenAndReact(rtm, inChan, errChan, outChan)
 }
 
 func eventReceiverWorker(wsConn *websocket.Conn, eventChan chan *InboundEvent, errChan chan *ErrorEvent) {
